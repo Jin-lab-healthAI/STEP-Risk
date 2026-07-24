@@ -1,0 +1,22 @@
+# Data (never commit patient-level data)
+data/
+*.csv
+*.xlsx
+!requirements.txt
+
+# Precomputed model artifacts / results (large, data-derived)
+results/
+outputs/
+*.pkl
+*.pickle
+
+# Python
+__pycache__/
+*.py[cod]
+.ipynb_checkpoints/
+.venv/
+env/
+venv/
+
+# OS
+.DS_Store
