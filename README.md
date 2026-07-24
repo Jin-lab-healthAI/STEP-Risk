@@ -47,10 +47,14 @@ STEP-Risk-models/
 │   └── 03_preop_model.py             # Preoperative checkpoint RF models + evaluation
 │
 ├── notebooks/                        # Figure-generation notebooks (outputs preserved)
-│   ├── Figure2_discrimination_summary.ipynb   # AUROC / ROC discrimination results
-│   ├── Figure3_calibration_postsurgery.ipynb  # Calibration, post-surgery checkpoint
-│   ├── Figure4_feature_importance_shap.ipynb  # SHAP feature-importance analysis
-│   └── FigureS3_calibration_preop.ipynb       # Calibration, preoperative checkpoint
+│   ├── Figure2_STEP_vs_OBrien_reproducible.ipynb  # AUROC comparison + statistics (Fig. 2)
+│   ├── Figure3_calibration_postsurgery.ipynb      # Calibration, post-surgery checkpoint
+│   ├── Figure4_feature_importance_shap.ipynb      # SHAP feature-importance analysis
+│   ├── FigureS3_calibration_preop.ipynb           # Calibration, preoperative checkpoint
+│   └── GeneratedFigure2/                           # Generated Figure 2 panels (see below)
+│       ├── retrospective_MMC/    # per-outcome ROC plots + comparison plot
+│       ├── prospective_MMC/      # per-outcome ROC plots + comparison plot
+│       └── external_BWH/         # per-outcome ROC plots + comparison plot
 │
 └── figures/                          # Manuscript figures
     ├── figure1_framework_overview.jpeg
@@ -77,10 +81,24 @@ The notebooks reproduce the manuscript figures **from precomputed model outputs*
 
 | Notebook | Manuscript figure |
 |---|---|
-| `Figure2_discrimination_summary.ipynb` | Fig. 2 — discrimination (AUROC bars + ROC curves) across cohorts and checkpoints |
+| `Figure2_STEP_vs_OBrien_reproducible.ipynb` | Fig. 2 — STEP-Risk vs O'Brien (STS) AUROC comparison, bootstrap 95% CIs, pairwise difference tests, and forest plots across cohorts and checkpoints |
 | `Figure3_calibration_postsurgery.ipynb` | Fig. 3 — calibration of the post-surgery checkpoint |
 | `Figure4_feature_importance_shap.ipynb` | Fig. 4 — SHAP feature importance for major morbidity or mortality |
 | `FigureS3_calibration_preop.ipynb` | Fig. S3 — calibration of the preoperative checkpoint |
+
+**`Figure2_STEP_vs_OBrien_reproducible.ipynb`** is a self-documented, reproducible version of the Figure 2 analysis. Given the risk-score and outcome CSVs (expected under a `Risk_scores_and_true_outcome/` folder), it computes the master AUROC table with bootstrap 95% confidence intervals, runs the pairwise STEP-Risk − O'Brien difference tests (unpaired bootstrap on each model's full applicable population as the primary analysis, paired bootstrap on the common STS-eligible subset as a sensitivity analysis), and renders the ΔAUROC forest plots. Tables and forest plots are written to an `analysis_outputs/` folder.
+
+### `notebooks/GeneratedFigure2/` — generated Figure 2 panels
+
+This folder contains the Figure 2 ROC panels produced by the analysis, organized by cohort:
+
+| Subfolder | Cohort |
+|---|---|
+| `retrospective_MMC/` | MMC retrospective test set |
+| `prospective_MMC/` | MMC temporal (prospective) cohort |
+| `external_BWH/` | BWH external validation cohort |
+
+Each subfolder holds one ROC plot per outcome (`test_<outcome>.jpg` for mortality, stroke, renal, cpvntlng, reop, major, PLOS, SLOS) plus a combined `test_comparsion.jpg`. These are the rendered outputs of the notebook and are included so the exact figures can be viewed without the underlying data.
 
 ---
 
@@ -97,9 +115,11 @@ The notebooks reproduce the manuscript figures **from precomputed model outputs*
 If the protected data were available, the scripts and notebooks would expect files under placeholder roots such as:
 
 ```
-data/processed/     # ML-ready feature/outcome matrices per cohort (X/Y, train/val/test, temporal, external)
-results/            # precomputed model objects, predicted probabilities, and SHAP values
-outputs/            # destination for regenerated figures/tables
+data/processed/                 # ML-ready feature/outcome matrices per cohort (X/Y, train/val/test, temporal, external)
+results/                        # precomputed model objects, predicted probabilities, and SHAP values
+outputs/                        # destination for regenerated figures/tables
+Risk_scores_and_true_outcome/   # risk-score + true-outcome CSVs consumed by Figure2_STEP_vs_OBrien_reproducible.ipynb
+analysis_outputs/               # tables/forest plots written by that notebook
 ```
 
 These directories are intentionally **absent** from the repository.
@@ -108,7 +128,7 @@ These directories are intentionally **absent** from the repository.
 
 ## Environment
 
-Core dependencies are listed in [`requirements.txt`](requirements.txt) (Python 3, scikit-learn, pandas, numpy, matplotlib, shap, scipy, openpyxl). Install with:
+Core dependencies are listed in [`requirements.txt`](requirements.txt) (Python 3, scikit-learn, pandas, numpy, matplotlib, seaborn, shap, scipy, statsmodels, openpyxl). Install with:
 
 ```bash
 pip install -r requirements.txt
